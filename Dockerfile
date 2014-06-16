@@ -4,7 +4,12 @@ RUN echo "deb http://archive.ubuntu.com/ubuntu precise main universe" > /etc/apt
 RUN apt-get update
 RUN apt-get upgrade -y
 
-RUN apt-get install -y openssh-server apache2 supervisor
+RUN apt-get -f install -y git openssh-server apache2 supervisor curl php5 php5-curl php5-xdebug php5-mysql php5-mcrypt && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin && mv /usr/local/bin/composer.phar /usr/local/bin/composer
+RUN mkdir /root/.composer
+ENV COMPOSER_HOME "/root/.composer"
+RUN composer global require phpunit/phpunit 4.1.* && composer global require phpmd/phpmd 1.4.* && composer global require squizlabs/php_codesniffer=* && composer global require fabpot/php-cs-fixer @stable
+
+RUN touch /root/.bash_profile && echo "export PATH=/root/.composer/vendor/bin:$PATH" >> /root/.bash_profile
 RUN mkdir -p /var/run/sshd
 RUN mkdir -p /var/log/supervisor
 
